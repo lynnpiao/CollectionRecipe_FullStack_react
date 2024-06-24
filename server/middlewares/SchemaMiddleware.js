@@ -158,7 +158,7 @@ const reviewSchema = Joi.object({
 
 // Middleware for validating request data
 const validateReview = (req, res, next) => {
-    const { error } = reviewSchema .validate(req.body);
+    const { error } = reviewSchema.validate(req.body);
     if (error) {
         return res.status(400).json({ msg: error.details[0].message });
     }

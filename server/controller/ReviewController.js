@@ -16,40 +16,45 @@ const getReviewsByRecipe = async (req, res) => {
         const reviews = await prisma.review.findMany({
             where: {
                 recipeId: recipeIdInt,
+            },
+            include: {
+                user: {
+                    select: {
+                        email: true
+                    }
+                }
             }
         });
 
         if (reviews.length === 0) {
             return res.status(404).json({ msg: 'No reviews found for this recipe' });
         }
-        res.status(200).json({ msg: 'Successfully get all reviews for one recipe', reviews });
+        const reviewsWithUserEmail = reviews.map(review => ({
+            ...review,
+            userEmail: review.user ? review.user.email : null
+        }));
+        res.status(200).json(reviewsWithUserEmail);
     } catch (error) {
         res.status(500).json({ msg: error.message })
     }
 }
 
 
+
 // create reviews for one recipe
 const createReviewByRecipe = async (req, res) => {
-    const { recipeId } = req.params;
-    const { userId, comment } = req.body;
+    const { comment, userId, recipeId} = req.body;
 
-    const recipeIdInt = parseInt(recipeId, 10);
-
-    if (isNaN(recipeIdInt)) {
-        return res.status(400).json({ error: 'Invalid recipeId' });
-    }
-
-    if (!comment){
-        return res.status(400).json({ error: 'Comment is required' });
+    if (!comment && !recipeId){
+        return res.status(400).json({ error: 'Comment or RecipeId is required' });
     }
 
     try {
         // Create the Review entry 
         const review = await prisma.review.create({
             data: {
-                recipeId: recipeId,
-                userId: userId,
+                recipeId: parseInt(recipeId),
+                userId: userId ? parseInt(userId) : null,
                 comment: comment
             },
         })
@@ -61,46 +66,13 @@ const createReviewByRecipe = async (req, res) => {
 };
 
 
-
-//update 
-const updateReviewByRecipe = async (req, res) => {
-    const { recipeId, id } = req.params;
-    const { comment, userId } = req.body
-
-    const recipeIdInt = parseInt(recipeId, 10);
-    const idInt = parseInt(id, 10);
-
-    if (!comment){
-        return res.status(400).json({ error: 'Comment is required' });
-    }
-
-    if (isNaN(recipeIdInt) || isNaN(idInt)) {
-        return res.status(400).json({ error: 'Invalid recipeId or reviewId' });
-    }
-
-    try {
-        const review = await prisma.review.update({
-            where: {
-                    id: idInt,
-            },
-            data: {
-                comment: comment
-            },
-        })
-        res.status(200).json({ msg: 'Comments updated successfully',review })
-    } catch (error) {
-        res.status(500).json({ msg: error.message })
-    }
-}
-
 // delete Procedures in recipe
 const deleteReviewByRecipe = async (req, res) => {
-    const { recipeId, id } = req.params;
+    const { id } = req.params;
 
-    const recipeIdInt = parseInt(recipeId, 10);
     const idInt = parseInt(id, 10);
 
-    if (isNaN(recipeIdInt) || isNaN(idInt)) {
+    if (isNaN(idInt)) {
         return res.status(400).json({ error: 'Invalid recipeId or reviewId' });
     }
 
@@ -126,7 +98,6 @@ const deleteReviewByRecipe = async (req, res) => {
 module.exports = {
     getReviewsByRecipe,
     createReviewByRecipe:[validateReview, createReviewByRecipe],  // Apply schema validation middleware
-    updateReviewByRecipe: [validatePartialReview, updateReviewByRecipe],  // Apply schema validation middleware
     deleteReviewByRecipe
 };
 

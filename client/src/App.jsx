@@ -15,6 +15,7 @@ import RecipeIngredients, {ingredientsLoader} from './pages/RecipeIngredients';
 import RecipeProcedures, {proceduresLoader} from './pages/RecipeProcedures';
 import AddRecipeIngredients  from './pages/AddRecipeIngredients';
 import AddRecipeProcedures from './pages/AddRecipeProcedures';
+import RecipeReviews from './pages/RecipeReviews';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import PageNotFound from "./pages/PageNotFound";
@@ -65,6 +66,8 @@ const App = () => {
         <Route path="/editrecipes/:id" element={<EditRecipe />} />
         <Route path="/ingredients/:id" element={<RecipeIngredients />} />
         <Route path="/procedures/:id" element={<RecipeProcedures />} />
+        <Route path="/reviews/:id" element={<RecipeReviews />} 
+        loader={recipeLoader} />
         <Route path="/addingredients/:id" element={<AddRecipeIngredients />} 
         loader={ingredientsLoader}/>
         <Route path="/addprocedures/:id" element={<AddRecipeProcedures />} 
