@@ -62,7 +62,7 @@ const AddRecipe = () => {
             }
 
             toast.success('Successfully created recipe');
-            // navigate("/myrecipes");
+            navigate("/myrecipes");
 
         })
         .catch(error => {

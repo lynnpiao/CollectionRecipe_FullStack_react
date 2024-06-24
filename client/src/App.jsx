@@ -10,9 +10,11 @@ import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage';
 import MyRecipes from './pages/MyRecipes';
 import AddRecipe from './pages/AddRecipe';
-import EditRecipe, {recipeLoader} from './pages/EditRecipe';
-import RecipeIngredients from './pages/RecipeIngredients';
-import AddRecipeIngredients, {ingredientsLoader} from './pages/AddRecipeIngredients';
+import EditRecipe, {recipeLoader}from './pages/EditRecipe';
+import RecipeIngredients, {ingredientsLoader} from './pages/RecipeIngredients';
+import RecipeProcedures, {proceduresLoader} from './pages/RecipeProcedures';
+import AddRecipeIngredients  from './pages/AddRecipeIngredients';
+import AddRecipeProcedures from './pages/AddRecipeProcedures';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import PageNotFound from "./pages/PageNotFound";
@@ -60,11 +62,13 @@ const App = () => {
         <Route index element={<HomePage />} />
         <Route path="/myrecipes" element={<MyRecipes />} />
         <Route path="/createrecipe" element={<AddRecipe />} />
-        <Route path="/editrecipes/:id" element={<EditRecipe />} 
-        loader={recipeLoader}/>
+        <Route path="/editrecipes/:id" element={<EditRecipe />} />
         <Route path="/ingredients/:id" element={<RecipeIngredients />} />
+        <Route path="/procedures/:id" element={<RecipeProcedures />} />
         <Route path="/addingredients/:id" element={<AddRecipeIngredients />} 
         loader={ingredientsLoader}/>
+        <Route path="/addprocedures/:id" element={<AddRecipeProcedures />} 
+        loader={proceduresLoader}/>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path='*' element={<PageNotFound />} />

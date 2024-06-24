@@ -17,6 +17,9 @@ const getProceduresByRecipe = async (req, res) => {
         const procedures = await prisma.procedureRecipe.findMany({
             where: {
                 recipeId: recipeIdInt,
+            },
+            orderBy:{
+                procedureId: "asc"
             }
         });
 
@@ -101,28 +104,26 @@ const updateProcedureByRecipe = async (req, res) => {
     }
 }
 
-// delete Procedures in recipe
-const deleteProceduresByRecipe = async (req, res) => {
-    const { recipeId } = req.params;
-    const { procedureIds } = req.body;
+// delete Procedure in recipe
+const deleteProcedureByRecipe = async (req, res) => {
+    const { recipeId, procedureId } = req.params;
+    console.log(recipeId);
+    console.log(procedureId);
 
     const recipeIdInt = parseInt(recipeId, 10);
+    const procedureIdInt = parseInt(procedureId, 10);
 
-    if (isNaN(recipeIdInt)) {
-        return res.status(400).json({ error: 'Invalid recipeId' });
-    }
-
-    if (!Array.isArray(procedureIds) || procedureIds.length === 0) {
-        return res.status(400).json({ error: 'ProcedureIds must be an array with at least one item' });
+    if (isNaN(recipeIdInt) || isNaN(procedureIdInt)) {
+        return res.status(400).json({ error: 'Invalid recipeId or ingredientId' });
     }
 
     try {
         // Delete the ProcedureRecipe entries
-        const deleteProcedures = await prisma.procedureRecipe.deleteMany({
+        const deleteProcedures = await prisma.procedureRecipe.delete({
             where: {
-                recipeId: recipeIdInt,
-                procedureId: {
-                    in: procedureIds,
+                procedureId_recipeId: {
+                    recipeId: recipeIdInt,
+                    procedureId: procedureIdInt,
                 },
             },
         });
@@ -142,6 +143,6 @@ module.exports = {
     getProceduresByRecipe,
     createProceduresByRecipe:[validateProcedure, createProceduresByRecipe],
     updateProcedureByRecipe:[validatePartialProcedure, updateProcedureByRecipe],
-    deleteProceduresByRecipe
+    deleteProcedureByRecipe
 };
 

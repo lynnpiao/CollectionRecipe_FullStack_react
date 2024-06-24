@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import PropTypes from "prop-types";
 import { Link } from 'react-router-dom';
 import { AuthContext } from "../utils/AuthContext";
+import { toast } from 'react-toastify';
 
 
 const RecipeForm = ({ recipe, onUpdateRecipe }) => {
@@ -13,7 +14,7 @@ const RecipeForm = ({ recipe, onUpdateRecipe }) => {
     const [photoUrl, setPhotoUrl] = useState('');
 
     const { authState } = useContext(AuthContext);
-    
+
     useEffect(() => {
         if (recipe) {
             setTitle(recipe.title);
@@ -25,32 +26,34 @@ const RecipeForm = ({ recipe, onUpdateRecipe }) => {
     }, [recipe]);
 
     // Function to handle form submission
+
+    console.log(authState.email);
+    console.log(recipe);
     const submitUpdateForm = (e) => {
 
         e.preventDefault();
-        // // Update recipe object with modified attributes
-        const updatedRecipe = {
-            ...recipe,
-            description: description,
-            duration: parseInt(duration),
-            photoUrl: photoUrl
-        };
 
-        // console.log(updatedRecipe);
-        // Call parent component callback to update recipe
-        console.log(updatedRecipe);
-        onUpdateRecipe(updatedRecipe);
+        if (authState.email === recipe.userEmail) {
+            // Update recipe object with modified attributes
+            const updatedRecipe = {
+                ...recipe,
+                description: description,
+                duration: parseInt(duration),
+                photoUrl: photoUrl
+            };
+
+            // Call parent component callback to update recipe
+            onUpdateRecipe(updatedRecipe);
+        } else {
+            toast.error('You are not authorized to update this recipe.');
+        }
     };
 
     return (
         <>
             <div className="container m-auto box-border h-32">
                 <div className="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0">
-                    <form onSubmit={() => {
-              if (authState.email === recipe.userEmail) {
-                submitUpdateForm;
-              }
-            }} >
+                <form onSubmit={submitUpdateForm}>
                         <div className='bg-white rounded-xl shadow-md'>
                             <h3 className='text-xl font-bold'> Update Main Part</h3>
                             <div className="flex w-full">

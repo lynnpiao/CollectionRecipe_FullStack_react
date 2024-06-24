@@ -5,12 +5,13 @@ import axios from 'axios';
 
 const AddRecipeIngredients = () => {
     const navigate = useNavigate();
+
     const ingredients = useLoaderData();
     const [allIngredients, setAllIngredients] = useState([]);
     const [selectedIngredients, setSelectedIngredients] = useState([]);
     const [recipeUserId, setRecipeUserId] = useState(null);
     const { authState } = useContext(AuthContext);
-
+   
     let { id } = useParams();
 
     const fetchAllIngredients = async () => {
@@ -39,13 +40,11 @@ const AddRecipeIngredients = () => {
         fetchRecipeUserId();
     }, [])
 
-    // console.log(allIngredients);
-    // console.log(ingredients);
+    let leftIngredients = allIngredients;
 
-    console.log(recipeUserId);
-    console.log(authState.id);
-
-    const leftIngredients = allIngredients.filter(ingredient => !ingredients.some(i => i.id === ingredient.id));
+    if (ingredients && ingredients.length > 0) {
+        leftIngredients = allIngredients.filter(ingredient => !ingredients.some(i => i.ingredientId === ingredient.id));
+    }
 
     const handleCheckboxChange = (id) => {
         setSelectedIngredients(prevSelected => {
@@ -94,14 +93,14 @@ const AddRecipeIngredients = () => {
         <>
             <div className="container m-auto box-border h-32">
                 <div className="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0">
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    if (authState.id === recipeUserId) {
-                        submitAddIngredient();
-                    } else {
-                        toast.error('You are not authorized to add ingredients to this recipe.');
-                    }
-                }}>
+                    <form onSubmit={(e) => {
+                        e.preventDefault();
+                        if (authState.id === recipeUserId) {
+                            submitAddIngredient();
+                        } else {
+                            toast.error('You are not authorized to add ingredients to this recipe.');
+                        }
+                    }}>
                         <div className='bg-white rounded-xl shadow-md'>
                             <h3 className='text-xl font-bold'> Add Recipe Ingredients</h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -150,15 +149,5 @@ const AddRecipeIngredients = () => {
     )
 }
 
-const ingredientsLoader = async ({ params }) => {
-    try {
-        const response = await axios.get(`http://localhost:8000/api/ingredients/${params.id}`);
-        return response.data; // Ensure this matches the shape of your data
-    } catch (error) {
-        console.error('Error loading ingredients for specific recipe:', error);
-        throw new Response('Failed to load ingredients for specific recipe', { status: 500 });
-    }
-};
 
-
-export { AddRecipeIngredients as default, ingredientsLoader }
+export { AddRecipeIngredients as default }

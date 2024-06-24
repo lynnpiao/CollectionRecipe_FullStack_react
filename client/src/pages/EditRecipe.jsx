@@ -1,16 +1,30 @@
-// import React, { useState, useEffect } from 'react';
 import RecipeForm from "../components/RecipeForm";
-import { useNavigate, useParams, useLoaderData} from 'react-router-dom';
+import { useNavigate, useParams} from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from "axios";
+import { useState, useEffect } from "react";
 
 const EditRecipe = () => {
     const navigate = useNavigate();
     let { id } = useParams();
     
     // console.log(id);
-    const recipe = useLoaderData();
+    const [recipe, setRecipe]= useState({});
 
+    const fetchRecipe = async()=>{
+        try {
+            const response = await axios.get(`http://localhost:8000/api/recipes/ById/${id}`);
+          //   console.log(response.data[0]);
+            setRecipe(response.data[0]); // Ensure this matches the shape of your data
+        } catch (error) {
+            console.error('Error loading recipe:', error);
+            throw new Response('Failed to load recipe', { status: 500 });
+        }
+    };
+    
+    useEffect(()=>{
+        fetchRecipe();
+     }, []);
 
     // Function to update recipe data
     const updateRecipe = async (updatedRecipe) => {
@@ -50,11 +64,11 @@ const recipeLoader = async ({ params }) => {
     //   console.log(response.data[0]);
       return response.data[0]; // Ensure this matches the shape of your data
   } catch (error) {
-      console.error('Error loading recipe:', error);
-      throw new Response('Failed to load recipe', { status: 500 });
+    if (error.response && error.response.status === 404) {
+      return null; // or return an appropriate error message or status
+    }
+    throw error; // rethrow other errors to be handled globally or by the component
   }
 };
 
-
-
-export {EditRecipe as default, recipeLoader};
+export {EditRecipe as default, recipeLoader}

@@ -1,4 +1,4 @@
-import IngredientTable from "../components/IngredientTable"
+import IngredientTable, {ingredientsLoader} from "../components/IngredientTable"
 
 const RecipeIngredients = () => {
   return (
@@ -8,4 +8,4 @@ const RecipeIngredients = () => {
   )
 }
 
-export default RecipeIngredients
+export {RecipeIngredients as default, ingredientsLoader}

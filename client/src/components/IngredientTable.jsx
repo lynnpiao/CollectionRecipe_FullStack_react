@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import Modal from 'react-modal';
 
 const IngredientTable = () => {
+
   const [ingredients, setIngredients] = useState([]);
   const [recipe, setRecipe] = useState({})
   const [recipeUserId, setRecipeUserId] = useState(null);
@@ -220,4 +221,17 @@ const IngredientTable = () => {
 }
 
 
-export default IngredientTable;
+const ingredientsLoader = async ({ params }) => {
+  try {
+    const response = await axios.get(`http://localhost:8000/api/ingredients/${params.id}`);
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return null; // or return an appropriate error message or status
+    }
+    throw error; // rethrow other errors to be handled globally or by the component
+  }
+};
+
+
+export {IngredientTable as default, ingredientsLoader}
